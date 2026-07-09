@@ -8,36 +8,8 @@ import UserList from "./UserList";
 import SidebarSkeleton from "./SidebarSkeleton";
 import EmptyState from "./EmptyState";
 import LogoutButton from "./LogoutButton";
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
 export default function ChatSidebar({ selectedChat, setSelectedChat, onlineUsers }) {
     const [search, setSearch] = useState("");
-    const queryClient = useQueryClient();
-
-    useEffect(() => {
-        const channel = supabase
-            .channel("sidebar-messages")
-            .on(
-                "postgres_changes",
-                {
-                    event: "INSERT",
-                    schema: "public",
-                    table: "message",
-                },
-                () => {
-                    queryClient.invalidateQueries({
-                        queryKey: ["conversations"],
-                    });
-                }
-            )
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel);
-        };
-    }, [queryClient]);
-
     const {
         data: conversations = [],
         isPending,

@@ -39,11 +39,25 @@ export async function GET(req) {
             return Response.json({ error: "Forbidden" }, { status: 403 });
         }
 
+
         const messages = await db
-            .select()
+            .select({
+                id: message.id,
+                conversationId: message.conversationId,
+                senderId: message.senderId,
+                text: message.text,
+                seen: message.seen,
+                seenAt: message.seenAt,
+                createdAt: message.createdAt,
+                type: message.type,
+                fileUrl: message.fileUrl,
+                fileName: message.fileName,
+                mimeType: message.mimeType,
+                fileSize: message.fileSize,
+            })
             .from(message)
             .where(eq(message.conversationId, conversationId))
-            .orderBy(message.createdAt);
+            .orderBy(message.createdAt)
 
         return Response.json({ messages });
     } catch (error) {
@@ -62,7 +76,14 @@ export async function POST(req) {
             return Response.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { conversationId, text } = await req.json();
+        const {
+            conversationId,
+            text,
+            type = "text",
+            fileUrl,
+            fileName,
+            mimeType,
+            fileSize, } = await req.json();
 
         if (!conversationId) {
             return Response.json(
@@ -71,8 +92,11 @@ export async function POST(req) {
             );
         }
 
-        if (!text?.trim()) {
-            return Response.json({ error: "Message is required" }, { status: 400 });
+        if (!text?.trim() && !fileUrl) {
+            return Response.json(
+                { error: "Message is required" },
+                { status: 400 }
+            );
         }
 
         const isMember = await db
@@ -96,7 +120,12 @@ export async function POST(req) {
                 id: crypto.randomUUID(),
                 conversationId,
                 senderId: session.user.id,
-                text: text.trim(),
+                text: text?.trim() || "",
+                type,
+                fileUrl,
+                fileName,
+                mimeType,
+                fileSize,
             })
             .returning();
 

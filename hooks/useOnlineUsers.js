@@ -39,6 +39,11 @@ export function useOnlineUsers(currentUser) {
             });
 
         return () => {
+            fetch("/api/presence", {
+                method: "POST",
+                keepalive: true,
+            });
+
             supabase.removeChannel(channel);
         };
     }, [currentUser]);

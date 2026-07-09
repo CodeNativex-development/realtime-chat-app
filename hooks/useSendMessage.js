@@ -4,13 +4,23 @@ export function useSendMessage() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({ conversationId, text }) => {
+        mutationFn: async ({ conversationId, text, type = "text",
+            fileUrl = null,
+            fileName = null,
+            mimeType = null,
+            fileSize = null, }) => {
             const res = await fetch("/api/messages", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ conversationId, text }),
+                body: JSON.stringify({
+                    conversationId, text, type,
+                    fileUrl,
+                    fileName,
+                    mimeType,
+                    fileSize
+                }),
             });
 
             if (!res.ok) throw new Error("Failed to send message");

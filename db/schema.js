@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, index ,integer } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
     id: text("id").primaryKey(),
@@ -158,4 +158,11 @@ export const message = pgTable("message", {
         .notNull(),
     seen: boolean("seen").default(false).notNull(),
     seenAt: timestamp("seen_at"),
+    editedAt: timestamp("edited_at"),
+    deletedAt: timestamp("deleted_at"),
+    type: text("type").default("text").notNull(),
+    fileUrl: text("file_url"),
+    fileName: text("file_name"),
+    mimeType: text("mime_type"),
+    fileSize: integer("file_size"),
 });
