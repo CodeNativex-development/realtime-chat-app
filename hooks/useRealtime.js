@@ -5,6 +5,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { getMessageTimestamp } from "@/lib/date";
 import { toast } from "sonner";
+import {
+    showBrowserNotification,
+} from "@/lib/browserNotification";
 
 function normalizeRealtimeDate(value) {
     if (!value) return new Date().toISOString();
@@ -201,6 +204,23 @@ export function useRealtime(currentUser, activeConversationId,
                         if (realtimeMessage.type === "file") {
                             notificationText = `📄 ${realtimeMessage.fileName || "Sent a document"
                                 }`;
+                        }
+                        const isPageHidden =
+                            document.visibilityState === "hidden";
+
+                        if (isPageHidden) {
+                            showBrowserNotification({
+                                title: senderName,
+                                body: notificationText,
+                                icon: senderImage || "/icon.svg",
+                                conversationId:
+                                    realtimeMessage.conversationId,
+                            }).catch((error) => {
+                                console.error(
+                                    "BROWSER_NOTIFICATION_ERROR:",
+                                    error
+                                );
+                            });
                         }
 
                         toast.custom(

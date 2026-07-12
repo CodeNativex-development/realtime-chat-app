@@ -23,7 +23,8 @@ export default function ChatPage() {
     currentUser,
     selectedChat?.conversationId,
     setSelectedChat
-);
+    );
+    
     useEffect(() => {
         const conversationId = selectedChat?.conversationId;
 
@@ -86,7 +87,52 @@ export default function ChatPage() {
             conversationId: activeConversation.conversationId,
         }
         : selectedChat;
+useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
 
+    const handleWorkerMessage = (event) => {
+        if (
+            event.data?.type !==
+            "OPEN_CONVERSATION"
+        ) {
+            return;
+        }
+
+        const conversationId =
+            event.data.conversationId;
+
+        if (!conversationId) return;
+
+        const conversation = conversations.find(
+            (item) =>
+                item.conversationId === conversationId
+        );
+
+        if (!conversation) return;
+
+        setSelectedChat({
+            id: conversation.user.id,
+            name: conversation.user.name,
+            email: conversation.user.email,
+            image: conversation.user.image,
+            lastSeen: conversation.user.lastSeen,
+            conversationId:
+                conversation.conversationId,
+        });
+    };
+
+    navigator.serviceWorker.addEventListener(
+        "message",
+        handleWorkerMessage
+    );
+
+    return () => {
+        navigator.serviceWorker.removeEventListener(
+            "message",
+            handleWorkerMessage
+        );
+    };
+}, [conversations]);
     return (
         <div className="chat-shell h-dvh overflow-hidden p-0 md:p-3 lg:p-5">
             <div className="mx-auto flex h-full max-w-[1680px] overflow-hidden bg-white shadow-2xl shadow-indigo-950/10 md:rounded-[28px] md:border md:border-white/80">

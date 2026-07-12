@@ -11,6 +11,7 @@ import EmptyState from "./EmptyState";
 import LogoutButton from "./LogoutButton";
 import ProfileModal from "./ProfileModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import EnableNotificationsButton from "./EnableNotificationsButton";
 
 export default function ChatSidebar({ selectedChat, setSelectedChat, onlineUsers, currentUser }) {
     const [search, setSearch] = useState("");
@@ -82,6 +83,7 @@ export default function ChatSidebar({ selectedChat, setSelectedChat, onlineUsers
                         </div>
                         <ChevronRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-indigo-500" />
                     </button>
+                    <EnableNotificationsButton />
                     <LogoutButton />
                 </div>
             </div>
